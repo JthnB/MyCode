@@ -30,7 +30,7 @@ public class Server implements Runnable{
 			try {
 				System.out.println("-> Server connected and listenning\n");
 				ClientAssistant clientassistant = new ClientAssistant(welcomesocket.accept());
-				Thread t = new Thread(clientassistant);
+				Thread t = new Thread(clientassistant,"AssistantThread");
 				t.start();
 			} 
 			catch (IOException e) {

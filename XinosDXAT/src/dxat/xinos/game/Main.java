@@ -9,7 +9,7 @@ public class Main {
 		int NUMMAXPLAYERS=10;
 		Server server = new Server(5021);
 		List<Player> listplayers = new ArrayList<Player>();
-		Thread t1 = new Thread(server);
+		Thread t1 = new Thread(server,"ServerThread");
 		t1.start();
 		try {
 			Thread.sleep(1000);
