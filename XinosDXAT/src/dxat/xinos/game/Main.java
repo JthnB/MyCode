@@ -11,18 +11,10 @@ public class Main {
 		List<Player> listplayers = new ArrayList<Player>();
 		Thread t1 = new Thread(server,"ServerThread");
 		t1.start();
-		try {
-			Thread.sleep(1000);
-			
-			for(int i=0;i<NUMMAXPLAYERS;i++){
-				listplayers.add(new Player(new Client("localhost",5021+i)));
-			}
-		} 
-		catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		for(int i=0;i<NUMMAXPLAYERS;i++){
+			listplayers.add(new Player(new Client("localhost",5021+i)));
 		}
-		
+ 
 	}
 
 }
