@@ -1,5 +1,6 @@
 package dxat.xinos.game;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,7 +9,11 @@ public class Game implements Runnable{
 	public boolean GAMESTARTED = false;
 	protected List<Player> listplayers =  new ArrayList<Player>();
 	protected HashMap<String,ClientAssistant> idtoclientassistant = new HashMap<String,ClientAssistant>();
+	Server server;
 	
+	protected Game(Server s){
+		server=s;
+	}
 	
 	protected boolean checkExistingPlayer(String id){
 		for(Player p : listplayers){
@@ -50,6 +55,15 @@ public class Game implements Runnable{
 					tmplist.remove(p);
 					sendMulticastMessage(listplayers, "YOULOSE");
 					resetPlayers();
+					System.out.println("[GAME]-> Closing ClientAssistant sockets...");
+//					for(ClientAssistant ca : server.clientlist){
+//						try {
+//							ca.socket.close();
+//						} catch (IOException e) {
+//							// TODO Auto-generated catch block
+//							e.printStackTrace();
+//						}
+//					}
 				}
 			}
 		}

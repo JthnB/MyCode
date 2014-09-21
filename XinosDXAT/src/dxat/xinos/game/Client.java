@@ -13,7 +13,7 @@ public class Client implements Runnable{
 	Socket socket;
 	String ip;
 	int port;
-	protected boolean DISCONNECT = false;
+	boolean DISCONNECT = false;
 	String ID;
 	Random r = new Random();
 	
@@ -71,17 +71,29 @@ public class Client implements Runnable{
 	@Override
 	public void run() {
 		BufferedReader serverresponse;
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		connect();
+		sendMessage(("PLAY_"+ID).toUpperCase());
 		while(true){
-			if(DISCONNECT)
+			if(DISCONNECT){
+				disconnect();
 				break;
+			}
 			try {
 				serverresponse = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				String sr = serverresponse.readLine();
-				System.out.println("-> [PLAYERCLIENT "+ID+"]-> "+sr);
+				System.out.println("[PLAYERCLIENT "+ID+"]-> "+sr);
 				
 				if(sr.toUpperCase().equals("YOUR_BET")){
-					sendMessage("MYBET_"+getBet(3)+"_3");
+					System.out.println("[PLAYERCLIENT "+ID+"]-> Your bet: ");
+					String s1 = br.readLine();
+					System.out.println("[PLAYERCLIENT "+ID+"]-> Your ammount: ");
+					String s2 = br.readLine();
+					sendMessage("MYBET_"+s2+"_"+s1);
+				}
+				
+				else if(sr.toUpperCase().equals("YOUWIN")||sr.toUpperCase().equals("YOULOSE")){
+					DISCONNECT=true;
 				}
 				
 			} 

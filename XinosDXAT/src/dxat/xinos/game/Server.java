@@ -22,7 +22,7 @@ public class Server implements Runnable{
 	public Server(int listenningport){
 		try {
 			welcomesocket = new ServerSocket(listenningport);
-			game = new Game();
+			game = new Game(this);
 		} 
 		
 		catch (IOException e) {
