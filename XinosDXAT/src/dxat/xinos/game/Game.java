@@ -5,6 +5,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * Game class. Contains all parameters and functions related with the game and necessary to decide who wins.
+ * @author Jonathan
+ *
+ */
 public class Game implements Runnable{
 	public boolean GAMESTARTED = false;
 	protected List<Player> listplayers =  new ArrayList<Player>();

@@ -7,13 +7,16 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.List;
 
+/**
+ * Class that contains all elements and functions to assist the client connected
+ * @author Jonathan
+ *
+ */
 public class ClientAssistant implements Runnable{
 
-	Socket socket;
-	String incommingsentence;
-	public String responsemsg="ACK";
-	Game game;
-	String playerid;
+	Socket socket;			//Socket related with the client connection		
+	Game game;				//Pointer to Game object			
+	String playerid;		//ID related with the player. It's is used to match the connection with the player.
 	
 	public ClientAssistant(Socket s, Game g){
 		socket=s;
@@ -23,7 +26,8 @@ public class ClientAssistant implements Runnable{
 	@Override
 	public void run() {
 		BufferedReader br;
-		String firstarg,secondarg,thirdarg = null;
+		String firstarg=null,secondarg=null,thirdarg = null;
+		String incommingsentence=null;
 		try {
 			br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			while(true){
@@ -33,6 +37,9 @@ public class ClientAssistant implements Runnable{
 				secondarg=s[1].toUpperCase();
 				if(s.length>2)
 					thirdarg=s[2].toUpperCase();
+				/*
+				 * Here are the actions corresponding with the incoming message
+				 */
 				if(firstarg.equals("PLAY")&&game.listplayers.size()==0){
 					sendMessage("WAIT");
 					playerid=secondarg;
@@ -63,11 +70,20 @@ public class ClientAssistant implements Runnable{
 			e1.printStackTrace();
 		};
 	}
-
+	
+	/**
+	 * This function splits a message separated with '_'
+	 * @param message Message to split
+	 * @return An string array with the parts of the message
+	 */
 	String[] splitMessage(String message){
 		return message.split("_");
 	}
 	
+	/**
+	 * Sends a message through the socket
+	 * @param message Message to send
+	 */
 	void sendMessage(String message){
 		try {
 			DataOutputStream response = new DataOutputStream(socket.getOutputStream());

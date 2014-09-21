@@ -1,5 +1,10 @@
 package dxat.xinos.game;
 
+/**
+ * Player class, contains all parameters related with the player
+ * @author Jonathan
+ *
+ */
 public class Player {
 	protected String ID="";
 	protected int score=0;

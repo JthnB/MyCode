@@ -9,15 +9,18 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class that waits and manages new connections for the clients
+ * @author Jonathan
+ *
+ */
 public class Server implements Runnable{
 
-	String incommingsentence="";
-	String ackmsg="OK";
-	ServerSocket welcomesocket;
-	List<ClientAssistant> clientlist = new ArrayList<ClientAssistant>();
-	List<Thread> listthreads = new ArrayList<Thread>();
-	Game game;
-	Thread gamethread;
+	ServerSocket welcomesocket;												//Welcome socket
+	List<ClientAssistant> clientlist = new ArrayList<ClientAssistant>();	//List of client assistants (connections)
+	List<Thread> listthreads = new ArrayList<Thread>();						//List of threads of client assistant
+	Game game;																//Pointer to the Game object
+	Thread gamethread;														//Game thread
 	
 	public Server(int listenningport){
 		try {
@@ -40,6 +43,11 @@ public class Server implements Runnable{
 				
 				System.out.println("[SERVER]-> Server connected and listenning\n");
 				Socket s = welcomesocket.accept();
+				
+				/*
+				 * When a new connection is accepted a new ClientAssistant is created and the server
+				 * delegates the connection to it.
+				 */
 				ClientAssistant clientassistant = new ClientAssistant(s,game);
 				clientlist.add(clientassistant);
 				Thread t = new Thread(clientassistant,"AssistantThread");
