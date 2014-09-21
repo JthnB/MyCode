@@ -1,19 +1,12 @@
 package dxat.xinos.game;
 
-import java.net.Socket;
-
 public class Player {
-	Client client;
-	int score;
-	String ID;
+	protected String ID="";
+	protected int score=0;
+	protected int totaltokens=-1;
+	protected int tokens=-1;
 	
-	public Player(Client c, String i){
-		client=c;
-		ID=i;
-	}
-	
-	void connectToServer(){
-		client.connect();
-		System.out.print("[PLAYER]> Received: "+client.sendMessage("PLAY"+ID)+"\n");
+	protected Player(String id){
+		ID=id;
 	}
 }

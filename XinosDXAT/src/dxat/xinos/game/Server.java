@@ -1,9 +1,9 @@
 package dxat.xinos.game;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -17,6 +17,7 @@ public class Server implements Runnable{
 	List<ClientAssistant> clientlist = new ArrayList<ClientAssistant>();
 	List<Thread> listthreads = new ArrayList<Thread>();
 	Game game;
+	Thread gamethread;
 	
 	public Server(int listenningport){
 		try {
@@ -32,18 +33,15 @@ public class Server implements Runnable{
 
 	@Override
 	public void run() {
-		BufferedReader br;
 		try {
+			gamethread = new Thread(game,"GAMETHREAD");
+			gamethread.start();
 			while(true){
 				
-				System.out.println("-> Server connected and listenning\n");
+				System.out.println("[SERVER]-> Server connected and listenning\n");
 				Socket s = welcomesocket.accept();
-				br = new BufferedReader(new InputStreamReader(s.getInputStream()));
-				DataOutputStream response = new DataOutputStream(s.getOutputStream());
-				
 				ClientAssistant clientassistant = new ClientAssistant(s,game);
 				clientlist.add(clientassistant);
-				
 				Thread t = new Thread(clientassistant,"AssistantThread");
 				listthreads.add(t);
 				t.start();

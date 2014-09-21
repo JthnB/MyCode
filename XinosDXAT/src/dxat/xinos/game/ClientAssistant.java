@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.List;
 
 public class ClientAssistant implements Runnable{
 
@@ -12,7 +13,7 @@ public class ClientAssistant implements Runnable{
 	String incommingsentence;
 	public String responsemsg="ACK";
 	Game game;
-	int playerid;
+	String playerid;
 	
 	public ClientAssistant(Socket s, Game g){
 		socket=s;
@@ -22,24 +23,39 @@ public class ClientAssistant implements Runnable{
 	@Override
 	public void run() {
 		BufferedReader br;
-		String firstarg = "",secondarg="";
+		String firstarg,secondarg,thirdarg = null;
 		try {
 			br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			DataOutputStream response = new DataOutputStream(socket.getOutputStream());
 			while(true){
 				incommingsentence=br.readLine();
-				splitMessage(incommingsentence,firstarg,secondarg);
-				if(firstarg.toUpperCase().equals("PLAY")&&game.listplayers.size()==0){
-					response.writeBytes("WAIT");
-					game.listplayers.add(secondarg);
+				String[] s=splitMessage(incommingsentence);
+				firstarg=s[0].toUpperCase();
+				secondarg=s[1].toUpperCase();
+				if(s.length>2)
+					thirdarg=s[2].toUpperCase();
+				if(firstarg.equals("PLAY")&&game.listplayers.size()==0){
+					sendMessage("WAIT");
+					playerid=secondarg;
+					game.listplayers.add(new Player(secondarg));
+					game.idtoclientassistant.put(secondarg,this);
+					System.out.println("[CLIENT ASSISTANT "+playerid+"]-> Message: "+firstarg+" ID: "+secondarg);
 				}
-				else if(firstarg.toUpperCase().equals("PLAY")&&game.listplayers.size()>0&&checkExistingPlayer(secondarg)){
-					response.writeBytes("YOUR_BET");
+				else if(firstarg.toUpperCase().equals("PLAY")&&game.listplayers.size()>0&&!game.checkExistingPlayer(secondarg)){
+					if(playerid==null)
+						playerid=secondarg;
+					game.listplayers.add(new Player(secondarg));
+					game.idtoclientassistant.put(secondarg,this);
+					game.sendMulticastMessage(game.listplayers,"YOUR_BET");
+					System.out.println("[CLIENT ASSISTANT "+playerid+"]-> Message: "+firstarg+" ID: "+secondarg);
+				}
+				
+				else if(firstarg.toUpperCase().equals("MYBET")&&secondarg.toUpperCase()!=null&&thirdarg!=null){
+					Player pr = game.findPlayerReg(playerid);
+					pr.tokens=Integer.parseInt(secondarg);
+					pr.totaltokens=Integer.parseInt(thirdarg);
 				}
 				else
-					response.writeBytes("CANNOT_UNDERSTAND_YOUR_MESSAGE");
-				System.out.println("[SERVER]-> ACK sent");
-				System.out.println("[SERVER]->"+incommingsentence);
+					sendMessage("[CLIENT ASSISTANT]-> CANNOT_UNDERSTAND_YOUR_MESSAGE");
 			}
 		} 
 		catch (IOException e1) {
@@ -47,20 +63,19 @@ public class ClientAssistant implements Runnable{
 			e1.printStackTrace();
 		};
 	}
-	
-	void splitMessage(String message, String fa, String sa){
-		String[] msgsplitted = message.split("_");
-		
-		fa= msgsplitted[0];
-		sa=msgsplitted[1];
+
+	String[] splitMessage(String message){
+		return message.split("_");
 	}
 	
-	boolean checkExistingPlayer(String id){
-		for(String s : game.listplayers){
-			if(id.toUpperCase().equals(s))
-				return true;
+	void sendMessage(String message){
+		try {
+			DataOutputStream response = new DataOutputStream(socket.getOutputStream());
+			response.writeBytes(message+"\n");
+		} 
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		
-		return false;
 	}
 }
